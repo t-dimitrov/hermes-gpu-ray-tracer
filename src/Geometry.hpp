@@ -9,6 +9,10 @@ This file is taken from https://github.com/ssloy/tinyraytracer/raw/bd36c9857305b
 #include <cassert>
 #include <iostream>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 template <size_t DIM, typename T> struct vec {
     vec() { for (size_t i = DIM; i--; data_[i] = T()); }
     T& operator[](const size_t i) { assert(i < DIM); return data_[i]; }
@@ -85,4 +89,10 @@ template <size_t DIM, typename T> std::ostream& operator<<(std::ostream& out, co
     }
     return out;
 }
+
+float DegToRad(float degrees)
+{
+    return degrees * (M_PI / 180.f);
+}
+
 #endif //__GEOMETRY_H__
