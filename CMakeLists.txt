@@ -15,6 +15,7 @@ set (HEADER_FILES
     "src/Scene.hpp"
     "src/Utility.hpp"
     "src/Interval.hpp"
+    "src/Camera.hpp"
 )
 
 # Create executable
