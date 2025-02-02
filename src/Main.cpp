@@ -2,17 +2,27 @@
 #include <vector>
 #include <fstream>
 
+#include "Utility.hpp"
 #include "Vec3f.hpp"
 #include "Ray.hpp"
+#include "Scene.hpp"
 
-Color3f RayColor(const Ray& ray)
+Color3f RayColor(const Ray& ray, Scene& scene)
 {
+    HitRecord hit;
+    float t = scene.Hit(ray, Interval(0.001f, Cyclops::INF), hit);
+    if (t > 0.0f)
+    {
+        return 0.5f * (hit.normal + Color3f(1.0f, 1.0f, 1.0f));
+    }
+
+    // Return background color
     Vec3f unitDir = UnitVector(ray.direction());
     auto a = 0.5f * (unitDir.y() + 1.0f);
     return (1.0f - a) * Color3f(1.0f, 1.0f, 1.0f) + a * Color3f(0.5f, 0.7f, 1.0f);
 }
 
-void Render()
+void Render(Scene& scene)
 {
     // Image
     constexpr float ASPECT_RATIO = 16.0f / 9.0f;
@@ -51,7 +61,7 @@ void Render()
             Vec3f rayDirection = pixelCenter - cameraCenter;
             Ray ray(cameraCenter, rayDirection);
 
-            Color3f pixelColor = RayColor(ray);
+            Color3f pixelColor = RayColor(ray, scene);
 
             for (size_t k = 0; k < 3; ++k)
             {
@@ -66,6 +76,11 @@ void Render()
 
 int main()
 {
-    Render();
+    Scene scene({
+        new Sphere(Point3f(0.0f, 0.0f, -1.0f), 0.5f),
+        new Sphere(Point3f(0.0f, -100.5f, -1.0f), 100.0f)
+    });
+
+    Render(scene);
     return 0;
 }

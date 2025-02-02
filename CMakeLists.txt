@@ -10,6 +10,11 @@ set(SOURCE_FILES
 set (HEADER_FILES
     "src/Vec3f.hpp"
     "src/Ray.hpp"
+    "src/IHittable.hpp"
+    "src/Sphere.hpp"
+    "src/Scene.hpp"
+    "src/Utility.hpp"
+    "src/Interval.hpp"
 )
 
 # Create executable
