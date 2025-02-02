@@ -17,7 +17,7 @@ int main()
         std::make_unique<Sphere>(Point3f(0.0f, -100.5f, -1.0f), 100.0f)
     });
 
-    Camera camera(16.0f/9.0f, 400, 100);
+    Camera camera(16.0f/9.0f, 400, 100, 50);
     camera.Render(scene);
     return 0;
 }

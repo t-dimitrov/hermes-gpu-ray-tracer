@@ -86,19 +86,32 @@ namespace Cyclops
         return (1 / t) * v;
     }
 
-    inline float Dot(const Vec3f& u, const Vec3f& v) {
+    inline Vec3f Normalize(const Vec3f& v)
+    {
+        float mag = v.Length();
+        if (mag == 0.0f) // In case of a zero vector
+        {
+            return Vec3f(0.0f, 0.0f, 0.0f);
+        }
+        return Vec3f(v.x() / mag, v.y() / mag, v.z() / mag);
+    }
+
+    inline float Dot(const Vec3f& u, const Vec3f& v) 
+    {
         return u.e[0] * v.e[0]
             + u.e[1] * v.e[1]
             + u.e[2] * v.e[2];
     }
 
-    inline Vec3f Cross(const Vec3f& u, const Vec3f& v) {
+    inline Vec3f Cross(const Vec3f& u, const Vec3f& v) 
+    {
         return Vec3f(u.e[1] * v.e[2] - u.e[2] * v.e[1],
             u.e[2] * v.e[0] - u.e[0] * v.e[2],
             u.e[0] * v.e[1] - u.e[1] * v.e[0]);
     }
 
-    inline Vec3f UnitVector(const Vec3f& v) {
+    inline Vec3f UnitVector(const Vec3f& v) 
+    {
         return v / v.Length();
     }
 
