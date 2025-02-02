@@ -1,19 +1,24 @@
 #pragma once
-#include "Geometry.hpp"
+#include "Vec3f.hpp"
 
-struct Ray
+class Ray
 {
-    Vec3f origin;
-    Vec3f direction;
-
-    Ray(const Vec3f& origin, const Vec3f& dir)
-        : origin(origin)
-        , direction(dir)
-    { }
+public:
     Ray() {}
+    Ray(const Vec3f& origin, const Vec3f& direction)
+        : _origin(origin)
+        , _direction(direction)
+    { }
 
     Vec3f At(float t) const
     {
-        return origin + direction * t;
+        return _origin + _direction * t;
     }
+
+    const Vec3f origin() const { return _origin; }
+    const Vec3f direction() const { return _direction; }
+
+private:
+    Vec3f _origin;
+    Vec3f _direction;
 };

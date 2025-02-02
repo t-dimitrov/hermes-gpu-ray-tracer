@@ -8,11 +8,8 @@ set(SOURCE_FILES
 )
 
 set (HEADER_FILES
-    "src/Geometry.hpp"
-    "src/Sphere.hpp"
-    "src/Material.hpp"
+    "src/Vec3f.hpp"
     "src/Ray.hpp"
-    "src/Light.hpp"
 )
 
 # Create executable

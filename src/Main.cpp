@@ -2,101 +2,70 @@
 #include <vector>
 #include <fstream>
 
-#include "Geometry.hpp"
-#include "Sphere.hpp"
+#include "Vec3f.hpp"
 #include "Ray.hpp"
-#include "Light.hpp"
 
-bool SceneIntersect(const Ray& ray, const std::vector<Sphere>& spheres, HitRecord& record)
+Color3f RayColor(const Ray& ray)
 {
-    HitRecord tempRecord;
-    constexpr float rayMax = std::numeric_limits<float>::max();
-    float closestHit = rayMax;
-    bool hitAnything = false;
-
-    for (size_t i = 0; i < spheres.size(); ++i)
-    {
-        if (spheres[i].Hit(ray, tempRecord))
-        {
-            hitAnything = true;
-            closestHit = tempRecord.t;
-            record = tempRecord;
-        }
-    }
-
-    return hitAnything;
+    Vec3f unitDir = UnitVector(ray.direction());
+    auto a = 0.5f * (unitDir.y() + 1.0f);
+    return (1.0f - a) * Color3f(1.0f, 1.0f, 1.0f) + a * Color3f(0.5f, 0.7f, 1.0f);
 }
 
-Vec3f CastRay(const Ray& ray, const std::vector<Sphere>& spheres, const std::vector<Light>& lights)
+void Render()
 {
-    HitRecord record;
+    // Image
+    constexpr float ASPECT_RATIO = 16.0f / 9.0f;
+    constexpr int IMAGE_WIDTH = 400;
+    // Calculate image height and ensure it's at least 1
+    constexpr int IMAGE_HEIGHT = (int(IMAGE_WIDTH / ASPECT_RATIO) < 1) ? 1 : int(IMAGE_WIDTH / ASPECT_RATIO);
 
-    if (!SceneIntersect(ray, spheres, record))
-    {
-        return { 0.2f, 0.7f, 0.8f }; //background color
-    }
+    // Canera
+    constexpr float FOCAL_LENGTH = 1.0f;
+    constexpr float VP_HEIGHT = 2.0f;
+    constexpr float VP_WIDTH = VP_HEIGHT * (float(IMAGE_WIDTH) / IMAGE_HEIGHT);
+    Point3f cameraCenter = { 0.0f, 0.0f, 0.0f };
 
-    // Compute lights
-    float diffuseLightIntensity = 0.0f;
-    for (size_t i = 0; i < lights.size(); ++i)
-    {
-        Vec3f lightDir = (lights[i].position - record.point).normalize();
-        diffuseLightIntensity += lights[i].intensity * std::max(0.0f, lightDir * record.normal);
-    }
+    // Calculate the vectors across the horizontal and down the vertical viewport edges.
+    Vec3f uViewport = Vec3f(VP_WIDTH, 0.0f, 0.0f);
+    Vec3f vViewport = Vec3f(0.0f, -VP_HEIGHT, 0.0f);
 
-    return record.material.diffuse * diffuseLightIntensity;
-}
+    // Calculate the horizontal and vertical delta vectors from pixel to pixel.
+    Vec3f uPixelDelta = uViewport / IMAGE_WIDTH;
+    Vec3f vPixelDelta = vViewport / IMAGE_HEIGHT;
 
-void Render(const std::vector<Sphere>& spheres, const std::vector<Light>& lights)
-{
-    const int WIDTH = 1024;
-    const int HEIGHT = 768;
-    const float FOVh = 60.0f; //in degrees
+    // Calculate the location of the upper left pixel.
+    Vec3f viewport_upper_left = cameraCenter - Vec3f(0.0f, 0.0f, FOCAL_LENGTH) - uViewport / 2.0f - vViewport / 2.0f;
+    Vec3f pixel00_loc = viewport_upper_left + 0.5 * (uPixelDelta + vPixelDelta);
 
-    std::vector<Vec3f> framebuffer(WIDTH * HEIGHT);
-
-    float aspectRatio = static_cast<float>(WIDTH) / static_cast<float>(HEIGHT);
-    float scale = std::tan(DegToRad(FOVh) / 2.0f);
-    for (size_t j = 0; j < HEIGHT; ++j)
-    {
-        for (size_t i = 0; i < WIDTH; ++i)
-        {
-            float x = (2.0f * (i + 0.5f) / (float)WIDTH - 1.0f) * aspectRatio * scale;
-            float y = (1.0f - 2.0f * (j + 0.5f) / (float)HEIGHT) * scale;
-
-            Ray ray({ 0.0f, 0.0f, 0.0f }, Vec3f(x, y, -1.0f).normalize());
-
-            framebuffer[i + j * WIDTH] = CastRay(ray, spheres, lights);
-        }
-    }
-
+    // Render
     std::ofstream ofs; //save the framebuffer to file
     ofs.open("./out.ppm", std::ofstream::out | std::ios::binary);
-    ofs << "P6\n" << WIDTH << " " << HEIGHT << "\n255\n";
-    for (size_t i = 0; i < WIDTH*HEIGHT; ++i)
+    ofs << "P6\n" << IMAGE_WIDTH << " " << IMAGE_HEIGHT << "\n255\n";
+    for (size_t j = 0; j < IMAGE_HEIGHT; ++j)
     {
-        for (size_t j = 0; j < 3; ++j)
+        std::cout << "\rScanlines remaining: " << j+1 << "/" << IMAGE_HEIGHT << ' ' << std::flush;
+        for (size_t i = 0; i < IMAGE_WIDTH; ++i)
         {
-            ofs << static_cast<char>(255 * std::max(0.f, std::min(1.f, framebuffer[i][j])));
+            Vec3f pixelCenter = pixel00_loc + (i * uPixelDelta) + (j * vPixelDelta);
+            Vec3f rayDirection = pixelCenter - cameraCenter;
+            Ray ray(cameraCenter, rayDirection);
+
+            Color3f pixelColor = RayColor(ray);
+
+            for (size_t k = 0; k < 3; ++k)
+            {
+                ofs << static_cast<char>(255.999f * pixelColor[k]);
+            }
         }
     }
     ofs.close();
+
+    std::cout << "\rDone.                       " << std::endl;
 }
 
 int main()
 {
-    Material ivory(Vec3f(0.4f, 0.4f, 0.3f));
-    Material redRubber(Vec3f(0.3f, 0.1f, 0.1f));
-
-    std::vector<Sphere> spheres;
-    spheres.emplace_back(Vec3f(-3.0f, 0.0f, -16.0f), 2.0f, ivory);
-    spheres.emplace_back(Vec3f(7.0f, 5.0f, -18.0f), 4.0f, ivory);
-    spheres.emplace_back(Vec3f(-1.0f, -1.5f, -12.0f), 2.0f, redRubber);
-    spheres.emplace_back(Vec3f(1.5f, -0.5f, -18.0f), 3.0f, redRubber);
-
-    std::vector<Light> lights;
-    lights.emplace_back(Vec3f(-20.0f, 20.0f, 20.0f), 1.5f);
-    
-    Render(spheres, lights);
+    Render();
     return 0;
 }
