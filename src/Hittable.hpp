@@ -5,12 +5,15 @@
 
 namespace Cyclops
 {
+    class Material;
     class HitRecord
     {
     public:
         Point3f point;
         Vec3f normal;
+        std::shared_ptr<Material> material;
         float t;
+        float u, v;
         bool frontFace;
 
         void SetFaceNormal(const Ray& ray, const Vec3f& outwardNormal)
@@ -22,10 +25,10 @@ namespace Cyclops
         }
     };
 
-    class IHittable
+    class Hittable
     {
     public:
-        virtual ~IHittable() = default;
+        virtual ~Hittable() = default;
 
         virtual bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const = 0;
     };

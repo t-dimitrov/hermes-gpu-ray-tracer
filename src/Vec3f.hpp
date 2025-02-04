@@ -43,12 +43,21 @@ namespace Cyclops
             return *this *= 1 / t;
         }
 
-        float Length() const {
+        float Length() const 
+        {
             return std::sqrt(LengthSquared());
         }
 
-        float LengthSquared() const {
+        float LengthSquared() const 
+        {
             return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
+        }
+
+        // Returns true if the vector is close to zero in all dimensions
+        bool IsNearZero() const
+        {
+            float s = 1e-8f;
+            return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) && (std::fabs(e[2]) < s);
         }
     };
 
@@ -117,7 +126,15 @@ namespace Cyclops
 
     Vec3f Reflect(const Vec3f& I, const Vec3f& N)
     {
-        return I - N * 2.0f * (I * N);
+        return I - 2.0f * Dot(I, N) * N;
+    }
+
+    Vec3f Refract(const Vec3f& uv, const Vec3f& N, float etaiOverEtat) 
+    {
+        float cosTheta = std::fmin(Dot(-uv, N), 1.0f);
+        Vec3f rOutPerp = etaiOverEtat * (uv + cosTheta * N);
+        Vec3f rOutParallel = -std::sqrt(std::fabs(1.0f - rOutPerp.LengthSquared())) * N;
+        return rOutPerp + rOutParallel;
     }
 }
 

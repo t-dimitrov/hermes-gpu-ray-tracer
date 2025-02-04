@@ -1,17 +1,17 @@
 #pragma once
 
-#include "IHittable.hpp"
+#include "Hittable.hpp"
 
 namespace Cyclops
 {
-    class Sphere : public IHittable
+    class Sphere : public Hittable
     {
     public:
-        Sphere(const Point3f& center, float radius)
+        Sphere(const Point3f& center, float radius, const std::shared_ptr<Material>& material)
             : _center(center)
             , _radius(radius)
-        {
-        }
+            , _material(material)
+        {}
 
         bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const override
         {
@@ -43,6 +43,12 @@ namespace Cyclops
             hit.point = ray.At(root);
             Vec3f outwardNormal = (hit.point - _center) / _radius;
             hit.SetFaceNormal(ray, outwardNormal);
+            hit.material = _material;
+
+            float theta = std::atan2(ray.direction().z(), ray.direction().x()); // azimuthal angle
+            float phi = std::acos(ray.direction().y()); // polar angle
+            hit.u = (theta + PI) / (2.0f * PI); // Normalize theta to [0, 1]
+            hit.v = phi / PI; // Normalize phi to [0, 1]
 
             return true;
         }
@@ -50,5 +56,6 @@ namespace Cyclops
     private:
         Point3f _center;
         float _radius;
+        std::shared_ptr<Material> _material;
     };
 }
