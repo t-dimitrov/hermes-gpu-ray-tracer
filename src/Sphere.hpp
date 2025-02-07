@@ -45,11 +45,6 @@ namespace Cyclops
             hit.SetFaceNormal(ray, outwardNormal);
             hit.material = _material;
 
-            float theta = std::atan2(ray.direction().z(), ray.direction().x()); // azimuthal angle
-            float phi = std::acos(ray.direction().y()); // polar angle
-            hit.u = (theta + PI) / (2.0f * PI); // Normalize theta to [0, 1]
-            hit.v = phi / PI; // Normalize phi to [0, 1]
-
             return true;
         }
 

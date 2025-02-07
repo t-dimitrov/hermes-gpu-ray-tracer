@@ -13,7 +13,6 @@ namespace Cyclops
         Vec3f normal;
         std::shared_ptr<Material> material;
         float t;
-        float u, v;
         bool frontFace;
 
         void SetFaceNormal(const Ray& ray, const Vec3f& outwardNormal)

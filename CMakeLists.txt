@@ -19,6 +19,7 @@ set (HEADER_FILES
     "src/Camera.hpp"
     "src/Material.hpp"
     "src/Timer.hpp"
+    "src/Model.hpp"
     "src/EnvironmentMap.hpp"
 
     "src/stb_image.h"

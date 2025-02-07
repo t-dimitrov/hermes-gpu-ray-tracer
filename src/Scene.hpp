@@ -13,9 +13,8 @@ namespace Cyclops
     {
     public:
         Scene() {}
-        Scene(const std::initializer_list<std::shared_ptr<Hittable>>& list, const std::shared_ptr<EnvironmentMap>& envMap)
+        Scene(const std::initializer_list<std::shared_ptr<Hittable>>& list)
             : _hittables(list)
-            , _envMap(envMap)
         {
         }
 
@@ -38,10 +37,7 @@ namespace Cyclops
             return hitAnything;
         }
 
-        std::shared_ptr<EnvironmentMap> GetEnvironmentMap() const { return _envMap; }
-
     private:
         std::vector<std::shared_ptr<Hittable>> _hittables;
-        std::shared_ptr<EnvironmentMap> _envMap;
     };
 }
