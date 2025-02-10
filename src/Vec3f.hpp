@@ -8,7 +8,7 @@ Taken from https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec
 #include <cmath>
 #include <iostream>
 
-namespace Cyclops
+namespace Hermes
 {
     class Vec3f {
     public:
@@ -124,12 +124,12 @@ namespace Cyclops
         return v / v.Length();
     }
 
-    Vec3f Reflect(const Vec3f& I, const Vec3f& N)
+    inline Vec3f Reflect(const Vec3f& I, const Vec3f& N)
     {
         return I - 2.0f * Dot(I, N) * N;
     }
 
-    Vec3f Refract(const Vec3f& uv, const Vec3f& N, float etaiOverEtat) 
+    inline Vec3f Refract(const Vec3f& uv, const Vec3f& N, float etaiOverEtat) 
     {
         float cosTheta = std::fmin(Dot(-uv, N), 1.0f);
         Vec3f rOutPerp = etaiOverEtat * (uv + cosTheta * N);

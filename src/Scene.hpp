@@ -5,9 +5,8 @@
 #include "Plane.hpp"
 #include "Ray.hpp"
 #include "Interval.hpp"
-#include "EnvironmentMap.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Scene
     {

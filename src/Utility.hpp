@@ -8,7 +8,7 @@
 
 #include "Vec3f.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     // Constants
     constexpr float INF = std::numeric_limits<float>::max();

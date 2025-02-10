@@ -1,7 +1,7 @@
 #pragma once
 #include "Vec3f.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Ray
     {

@@ -7,9 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
     "src/Main.cpp"
-    
-    # CUDA src files
-    "src/Kernels/Render.cu"
+    "src/Camera.cu"
 )
 
 set (HEADER_FILES
@@ -25,9 +23,8 @@ set (HEADER_FILES
     "src/Material.hpp"
     "src/Timer.hpp"
     "src/Model.hpp"
-    "src/EnvironmentMap.hpp"
-
-    "src/stb_image.h"
+    #"src/EnvironmentMap.hpp"
+    #"src/stb_image.h"
 )
 
 # Create executable

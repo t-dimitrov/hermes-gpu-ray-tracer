@@ -2,7 +2,7 @@
 
 #include "Hittable.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Sphere : public Hittable
     {

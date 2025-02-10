@@ -3,7 +3,7 @@
 #include "Hittable.hpp"
 #include "Utility.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     /*
     The Material class is responsible for two things:

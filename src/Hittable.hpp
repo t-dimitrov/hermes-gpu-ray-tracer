@@ -3,7 +3,7 @@
 #include "Ray.hpp"
 #include "Interval.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Material;
     class HitRecord

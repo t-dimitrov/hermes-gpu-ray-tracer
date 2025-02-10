@@ -1,7 +1,7 @@
 #pragma once
 #include "Utility.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Interval
     {
@@ -10,8 +10,8 @@ namespace Cyclops
 
         //Default interval is empty, therefore min and max are swapped
         Interval()
-            : min(+Cyclops::INF)
-            , max(-Cyclops::INF)
+            : min(+Hermes::INF)
+            , max(-Hermes::INF)
         {
         }
 
@@ -36,5 +36,5 @@ namespace Cyclops
     };
 }
 
-const Cyclops::Interval Cyclops::Interval::s_empty = Cyclops::Interval(+Cyclops::INF, -Cyclops::INF);
-const Cyclops::Interval Cyclops::Interval::s_universe = Cyclops::Interval(-Cyclops::INF, +Cyclops::INF);
+inline const Hermes::Interval Hermes::Interval::s_empty = Hermes::Interval(+Hermes::INF, -Hermes::INF);
+inline const Hermes::Interval Hermes::Interval::s_universe = Hermes::Interval(-Hermes::INF, +Hermes::INF);

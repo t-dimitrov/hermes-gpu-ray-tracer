@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-namespace Cyclops
+namespace Hermes
 {
     template <typename Resolution = std::chrono::milliseconds>
     class Timer

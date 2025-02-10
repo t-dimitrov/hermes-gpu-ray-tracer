@@ -1,7 +1,7 @@
 #pragma once
 #include "Hittable.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Plane : public Hittable
     {

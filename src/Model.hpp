@@ -8,7 +8,7 @@
 #include "Hittable.hpp"
 #include "Vec3f.hpp"
 
-namespace Cyclops
+namespace Hermes
 {
     class Model : public Hittable
     {
