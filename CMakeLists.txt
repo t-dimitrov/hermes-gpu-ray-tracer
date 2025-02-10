@@ -1,10 +1,15 @@
-cmake_minimum_required(VERSION 3.27)
-project("Cyclops CPU Ray Tracer")
+cmake_minimum_required(VERSION 3.29)
+
+project("Hermes GPU Ray Tracer" LANGUAGES CXX)
+enable_language(CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
     "src/Main.cpp"
+    
+    # CUDA src files
+    "src/Kernels/Render.cu"
 )
 
 set (HEADER_FILES
@@ -26,15 +31,26 @@ set (HEADER_FILES
 )
 
 # Create executable
-add_executable(Cyclops
+add_executable(Hermes
     ${SOURCE_FILES}
     ${HEADER_FILES}
 )
 
 # Include directories
-target_include_directories(Cyclops PRIVATE
+target_include_directories(Hermes PRIVATE
     "src/"
+    ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
+
+set_target_properties(Hermes PROPERTIES
+    CMAKE_CUDA_STANDARD 17
+    POSITION_INDEPENDENT_CODE ON
+    CUDA_SEPARABLE_COMPILATION ON
+    CUDA_RESOLVE_DEVICE_SYMBOLS ON
+)
+
+# Compile for the architecture(s) of the host's GPU(s).
+#set_target_properties(Hermes PROPERTIES CUDA_ARCHITECTURES native)
 
 # Copy 'res' folder to output folder
 add_custom_target(copy_res_folder ALL
@@ -44,4 +60,4 @@ add_custom_target(copy_res_folder ALL
     COMMENT "Copying 'res' folder into binary directory"
 )
 
-add_dependencies(Cyclops copy_res_folder)
+add_dependencies(Hermes copy_res_folder)
