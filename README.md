@@ -1,2 +1,2 @@
 # Cyclops CPU Ray Tracer
-A toy CPU ray tracer created with the sole purpose of learning the basics of raytracing.
+A toy GPU-based ray tracer using CUDA, created with the sole purpose of learning the basics of raytracing.
