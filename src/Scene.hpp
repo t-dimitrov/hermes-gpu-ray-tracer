@@ -1,10 +1,13 @@
 #pragma once
 #include <vector>
+#include <fstream>
 
+#include "Camera.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"
 #include "Ray.hpp"
 #include "Interval.hpp"
+#include "Timer.hpp"
 
 namespace Hermes
 {
@@ -12,12 +15,20 @@ namespace Hermes
     {
     public:
         Scene() {}
-        Scene(const std::initializer_list<std::shared_ptr<Hittable>>& list)
+        Scene(const std::initializer_list<Hittable*>& list)
             : _hittables(list)
         {
         }
 
-        bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const
+        ~Scene()
+        {
+            for (int i = 0; i < _hittables.size(); ++i)
+            {
+                delete _hittables[i];
+            }
+        }
+
+        inline bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const
         {
             HitRecord tempHit;
             bool hitAnything = false;
@@ -37,6 +48,6 @@ namespace Hermes
         }
 
     private:
-        std::vector<std::shared_ptr<Hittable>> _hittables;
+        std::vector<Hittable*> _hittables;
     };
 }

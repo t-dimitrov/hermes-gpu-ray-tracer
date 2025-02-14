@@ -7,7 +7,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
     "src/Main.cpp"
-    "src/Camera.cu"
+    "src/CPURayTracer.cpp"
+    "src/Kernels/GPURayTracer.cu"
 )
 
 set (HEADER_FILES
@@ -22,9 +23,10 @@ set (HEADER_FILES
     "src/Camera.hpp"
     "src/Material.hpp"
     "src/Timer.hpp"
-    "src/Model.hpp"
-    #"src/EnvironmentMap.hpp"
-    #"src/stb_image.h"
+    "src/Mesh.hpp"
+
+    "src/CPURayTracer.hpp"
+    "src/Kernels/GPURayTracer.h"
 )
 
 # Create executable

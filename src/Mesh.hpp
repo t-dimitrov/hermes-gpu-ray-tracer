@@ -10,10 +10,10 @@
 
 namespace Hermes
 {
-    class Model : public Hittable
+    class Mesh : public Hittable
     {
     public:
-        Model(const std::string& filename, const Vec3f& position, float scale, const std::shared_ptr<Material>& material)
+        Mesh(const std::string& filename, const Vec3f& position, float scale, const std::shared_ptr<Material>& material)
             : _position(position)
             , _scale(scale)
             , _aabbMin(INF, INF, INF)
@@ -22,7 +22,7 @@ namespace Hermes
         {
             LoadObj(filename);
 
-            // Update position and scale of model's AABB
+            // Update position and scale of Mesh's AABB
             for (size_t i = 0; i < 3; ++i)
             {
                 _aabbMin.e[i] = (_aabbMin.e[i] + _position.e[i]) * _scale;
@@ -30,7 +30,7 @@ namespace Hermes
             }
         }
 
-        ~Model()
+        ~Mesh()
         {
 
         }
