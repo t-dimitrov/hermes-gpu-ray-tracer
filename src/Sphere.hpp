@@ -2,18 +2,23 @@
 
 #include "Hittable.hpp"
 
+#include <cuda_runtime.h>
+#include <cstdio>
+
 namespace Hermes
 {
-    class Sphere : public Hittable
+    class Sphere
     {
     public:
-        Sphere(const Point3f& center, float radius, const std::shared_ptr<Material>& material)
+        Sphere() {}
+        Sphere(const Point3f& center, float radius, MaterialType type, int materialId)
             : _center(center)
             , _radius(radius)
-            , _material(material)
+            , _materialType(type)
+            , _materialId(materialId)
         {}
 
-        bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const override
+        __device__ bool HitOnDevice(const Ray& ray, Interval tRay, HitRecord& hit) const
         {
             Vec3f oc = _center - ray.origin();
             auto a = ray.direction().LengthSquared();
@@ -43,7 +48,8 @@ namespace Hermes
             hit.point = ray.At(root);
             Vec3f outwardNormal = (hit.point - _center) / _radius;
             hit.SetFaceNormal(ray, outwardNormal);
-            hit.material = _material;
+            hit.materialType = _materialType;
+            hit.materialId = _materialId;
 
             return true;
         }
@@ -51,6 +57,7 @@ namespace Hermes
     private:
         Point3f _center;
         float _radius;
-        std::shared_ptr<Material> _material;
+        MaterialType _materialType;
+        int _materialId;
     };
 }

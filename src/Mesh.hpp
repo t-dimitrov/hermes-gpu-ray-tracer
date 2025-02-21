@@ -10,15 +10,17 @@
 
 namespace Hermes
 {
-    class Mesh : public Hittable
+    class Mesh
     {
     public:
-        Mesh(const std::string& filename, const Vec3f& position, float scale, const std::shared_ptr<Material>& material)
+        Mesh() {}
+        Mesh(const std::string& filename, const Vec3f& position, float scale, MaterialType type, int materialId)
             : _position(position)
             , _scale(scale)
             , _aabbMin(INF, INF, INF)
             , _aabbMax(-INF, -INF, -INF)
-            , _material(material)
+            , _materialType(type)
+            , _materialId(materialId)
         {
             LoadObj(filename);
 
@@ -32,13 +34,12 @@ namespace Hermes
 
         ~Mesh()
         {
-
         }
 
         /*
         Implemented using this Geometric test:
         */
-        bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const override
+        __device__ bool HitOnDevice(const Ray& ray, Interval tRay, HitRecord& hit, Vec3f* vertices, uint32_t* indices, uint32_t indexCount) const
         {
             if (!HitAABB(ray, tRay))
             {
@@ -46,12 +47,12 @@ namespace Hermes
             }
 
             bool hitAnything = false;
-            float closestHit = std::numeric_limits<float>::max();
-            for (int index = 0; index < _indices.size(); index += 3)
+            float closestHit = FLT_MAX; //std::numeric_limits<float>::max();
+            for (int index = 0; index < indexCount; index += 3)
             {
-                Vec3f v0 = (_vertices[_indices[index + 0]-1] + _position) * _scale;
-                Vec3f v1 = (_vertices[_indices[index + 1]-1] + _position) * _scale;
-                Vec3f v2 = (_vertices[_indices[index + 2]-1] + _position) * _scale;
+                Vec3f v0 = (vertices[indices[index + 0] - 1] + _position) * _scale;
+                Vec3f v1 = (vertices[indices[index + 1] - 1] + _position) * _scale;
+                Vec3f v2 = (vertices[indices[index + 2] - 1] + _position) * _scale;
 
                 // Counter-clock wise
                 Vec3f v0v1 = v1 - v0;
@@ -62,7 +63,7 @@ namespace Hermes
 
                 // Check if ray and plane are parallel
                 float NdotRayDirection = Dot(N, ray.direction());
-                if (std::fabs(NdotRayDirection) < 0.0001f)
+                if (fabsf(NdotRayDirection) < 0.0001f)
                 {
                     continue;
                 }
@@ -121,7 +122,8 @@ namespace Hermes
                     hit.t = t;
                     hit.point = P;
                     hit.SetFaceNormal(ray, Normalize(N));
-                    hit.material = _material;
+                    hit.materialType = _materialType;
+                    hit.materialId = _materialId;
                     hitAnything = true;
                 }
             }
@@ -138,7 +140,7 @@ namespace Hermes
                 std::cerr << "Error: failed to open " << filename << std::endl;
                 return false;
             }
-            
+
             std::string line;
             while (std::getline(ifs, line))
             {
@@ -166,6 +168,7 @@ namespace Hermes
                     _indices.emplace_back(v2);
                 }
             }
+            std::cout << "Index size: " << _indices.size() << std::endl;
 
             ifs.close();
             return true;
@@ -187,7 +190,7 @@ namespace Hermes
             }
         }
 
-        bool HitAABB(const Ray& ray, Interval tRay) const
+        __host__ __device__ bool HitAABB(const Ray& ray, Interval tRay) const
         {
             float t1 = (_aabbMin.x() - ray.origin().x()) / ray.direction().x();
             float t2 = (_aabbMax.x() - ray.origin().x()) / ray.direction().x();
@@ -195,8 +198,8 @@ namespace Hermes
             float t4 = (_aabbMax.y() - ray.origin().y()) / ray.direction().y();
             float t5 = (_aabbMin.z() - ray.origin().z()) / ray.direction().z();
             float t6 = (_aabbMax.z() - ray.origin().z()) / ray.direction().z();
-            float t7 = std::fmax(std::fmax(std::fmin(t1, t2), std::fmin(t3, t4)), std::fmin(t5, t6));
-            float t8 = std::fmin(std::fmin(std::fmax(t1, t2), std::fmax(t3, t4)), std::fmax(t5, t6));
+            float t7 = fmax(fmax(fmin(t1, t2), fmin(t3, t4)), fmin(t5, t6));
+            float t8 = fmin(fmin(fmax(t1, t2), fmax(t3, t4)), fmax(t5, t6));
 
             if (t8 < 0.0f || t7 > t8)
             {
@@ -215,6 +218,11 @@ namespace Hermes
 
         std::vector<Vec3f> _vertices;
         std::vector<uint32_t> _indices;
-        std::shared_ptr<Material> _material;
+
+        MaterialType _materialType;
+        int _materialId;
+
+        friend class GPURayTracer;
+        friend class Scene;
     };
 }

@@ -8,14 +8,27 @@
 
 #include "Vec3f.hpp"
 
+#include <cuda_runtime.h>
+#include <curand_kernel.h>
+
 namespace Hermes
 {
+
+#define CheckCuda(cudaStatus){\
+    cudaDeviceSynchronize();\
+    cudaError_t kernelError = cudaGetLastError();\
+    if (cudaStatus != cudaSuccess) {\
+        std::cerr << "Cuda failed: " << cudaGetErrorString(kernelError) << " (" << cudaStatus << ")" << std::endl;\
+        cudaDeviceReset();\
+    }\
+}\
+
     // Constants
     constexpr float INF = std::numeric_limits<float>::max();
     constexpr float PI = 3.1415926535897932385;
 
     // Utility func
-    inline float DegToRad(float degrees)
+    inline __host__ __device__ float DegToRad(float degrees)
     {
         return degrees * PI / 180.0f;
     }

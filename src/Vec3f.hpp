@@ -5,8 +5,8 @@ Taken from https://raytracing.github.io/books/RayTracingInOneWeekend.html#thevec
 #ifndef VEC3_H
 #define VEC3_H
 
-#include <cmath>
 #include <iostream>
+#include <cstdio>
 
 #include <cuda_runtime.h>
 
@@ -47,7 +47,7 @@ namespace Hermes
 
         __host__ __device__ float Length() const
         {
-            return std::sqrt(LengthSquared());
+            return sqrtf(LengthSquared());
         }
 
         __host__ __device__ float LengthSquared() const
@@ -59,7 +59,7 @@ namespace Hermes
         __host__ __device__ bool IsNearZero() const
         {
             float s = 1e-8f;
-            return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) && (std::fabs(e[2]) < s);
+            return (fabsf(e[0]) < s) && (fabsf(e[1]) < s) && (fabsf(e[2]) < s);
         }
     };
 
@@ -69,7 +69,7 @@ namespace Hermes
 
     // Vector Utility Functions
 
-    inline __host__ __device__ std::ostream& operator<<(std::ostream& out, const Vec3f& v) {
+    inline __host__ std::ostream& operator<<(std::ostream& out, const Vec3f& v) {
         return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
     }
 
@@ -133,9 +133,9 @@ namespace Hermes
 
     inline __host__ __device__ Vec3f Refract(const Vec3f& uv, const Vec3f& N, float etaiOverEtat)
     {
-        float cosTheta = std::fmin(Dot(-uv, N), 1.0f);
+        float cosTheta = fminf(Dot(-uv, N), 1.0f);
         Vec3f rOutPerp = etaiOverEtat * (uv + cosTheta * N);
-        Vec3f rOutParallel = -std::sqrt(std::fabs(1.0f - rOutPerp.LengthSquared())) * N;
+        Vec3f rOutParallel = -sqrtf(fabsf(1.0f - rOutPerp.LengthSquared())) * N;
         return rOutPerp + rOutParallel;
     }
 }

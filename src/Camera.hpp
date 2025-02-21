@@ -16,7 +16,8 @@ namespace Hermes
     class Camera
     {
     public:
-        Camera(float aspectRatio, int imageWidth,
+        Camera() {}
+        __host__ __device__ Camera(float aspectRatio, int imageWidth,
             float FOVv,
             const Point3f& lookFrom, const Point3f& lookAt, const Point3f& up,
             int samplesPerPixel, int maxDepth)
@@ -61,17 +62,17 @@ namespace Hermes
             _pixel00Loc = viewport_upper_left + 0.5 * (_uPixelDelta + _vPixelDelta);
         }
 
-        inline int GetImageWidth() const { return _imageWidth; }
-        inline int GetImageHeight() const { return _imageHeight; }
+        inline __host__ __device__ int GetImageWidth() const { return _imageWidth; }
+        inline __host__ __device__ int GetImageHeight() const { return _imageHeight; }
 
-        inline int GetSamplesPerPixel() const { return _samplesPerPixel; }
-        inline int GetMaxDepth() const { return _maxDepth; }
+        inline __host__ __device__ int GetSamplesPerPixel() const { return _samplesPerPixel; }
+        inline __host__ __device__ int GetMaxDepth() const { return _maxDepth; }
 
-        inline float GetPixelSampleScale() const { return _pixelSampleScale; }
+        inline __host__ __device__ float GetPixelSampleScale() const { return _pixelSampleScale; }
 
         // Construct a camera ray originating from the origin and directed 
         // at randomly sampled point around the pixel location (i, j).
-        inline Ray GetRay(int i, int j) const
+        inline __host__ Ray GetRay(int i, int j) const
         {
             Vec3f offset = SampleSquare();
             Vec3f pixelSample = _pixel00Loc
@@ -81,9 +82,19 @@ namespace Hermes
             return Ray(_center, pixelSample - _center);
         }
 
+        inline __device__ Ray GetRayDevice(int i, int j, const Vec3f& sampleSquare)
+        {
+            Vec3f offset = sampleSquare;
+            Vec3f pixelSample = _pixel00Loc
+                + ((i + offset.x()) * _uPixelDelta)
+                + ((j + offset.y()) * _vPixelDelta);
+
+            return Ray(_center, pixelSample - _center);
+        }
+
     private:
         // Returns the vector to a random point in the [-0.5,-0.5]-[+0.5,+0.5] unit square.
-        inline Vec3f SampleSquare() const
+        inline __host__ Vec3f SampleSquare() const
         {
             return Vec3f(RandomFloat() - 0.5f, RandomFloat() - 0.5f, 0.0f);
         }

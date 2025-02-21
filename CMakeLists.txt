@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.29)
 project("Hermes GPU Ray Tracer" LANGUAGES CXX)
 enable_language(CUDA)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(SOURCE_FILES
     "src/Main.cpp"
-    "src/CPURayTracer.cpp"
+    
     "src/Kernels/GPURayTracer.cu"
 )
 
@@ -25,7 +25,6 @@ set (HEADER_FILES
     "src/Timer.hpp"
     "src/Mesh.hpp"
 
-    "src/CPURayTracer.hpp"
     "src/Kernels/GPURayTracer.h"
 )
 
@@ -33,7 +32,7 @@ set (HEADER_FILES
 add_executable(Hermes
     ${SOURCE_FILES}
     ${HEADER_FILES}
-)
+ )
 
 # Include directories
 target_include_directories(Hermes PRIVATE

@@ -9,22 +9,22 @@ namespace Hermes
         float min, max;
 
         //Default interval is empty, therefore min and max are swapped
-        Interval()
+        __host__ __device__ Interval()
             : min(+Hermes::INF)
             , max(-Hermes::INF)
         {
         }
 
-        Interval(float min, float max)
+        __host__ __device__ Interval(float min, float max)
             : min(min)
             , max(max)
         {
         }
 
-        float Size() const { return max - min; }
-        bool Contains(float x) const { return min <= x && x <= max; }
-        bool Surrounds(float x) const { return min < x && x < max; }
-        float Clamp(float x) const
+        __host__ __device__ float Size() const { return max - min; }
+        __host__ __device__ bool Contains(float x) const { return min <= x && x <= max; }
+        __host__ __device__ bool Surrounds(float x) const { return min < x && x < max; }
+        __host__ __device__ float Clamp(float x) const
         {
             if (x < min) return min;
             if (x > max) return max;

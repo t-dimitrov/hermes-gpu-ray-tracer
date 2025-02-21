@@ -3,19 +3,21 @@
 
 namespace Hermes
 {
-    class Plane : public Hittable
+    class Plane
     {
     public:
-        Plane(const Point3f& position, const Vec3f& normal, float width, float height, const std::shared_ptr<Material>& material)
+        Plane() {}
+        Plane(const Point3f& position, const Vec3f& normal, float width, float height, MaterialType type, int materialId)
             : _position(position)
             , _normal(normal)
             , _width(width)
             , _height(height)
-            , _material(material)
+            , _materialType(type)
+            , _materialId(materialId)
         {
         }
 
-        bool Hit(const Ray& ray, Interval tRay, HitRecord& hit) const override
+        __device__ bool HitOnDevice(const Ray& ray, Interval tRay, HitRecord& hit) const
         {
             if (Dot(ray.direction(), _normal) > 0.0f)
             {
@@ -38,7 +40,8 @@ namespace Hermes
             hit.t = t;
             hit.point = ray.At(hit.t);
             hit.SetFaceNormal(ray, _normal);
-            hit.material = _material;
+            hit.materialType = _materialType;
+            hit.materialId = _materialId;
 
             return true;
         }
@@ -47,6 +50,8 @@ namespace Hermes
         Point3f _position;
         Vec3f _normal;
         float _width, _height;
-        std::shared_ptr<Material> _material;
+
+        MaterialType _materialType;
+        int _materialId;
     };
 }
